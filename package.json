@@ -1,0 +1,23 @@
+{
+  "name": "bus-bot",
+  "version": "0.0.1",
+  "description": "Chat bot for fetching bus times.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/morch028/bus-bot"
+  },
+  "author": "Matthew Orchard & Ryan Fleck",
+  "homepage": "https://github.com/morch028/bus-bot",
+  "license": "MIT",
+  "dependencies": {
+    "botkit": "^0.6.16",
+    "botkit-storage-mongo": "^1.0.7",
+    "mongodb": "^3.1.1"
+  },
+  "devDependencies": {},
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "devStart": "lt index"
+  }
+}
