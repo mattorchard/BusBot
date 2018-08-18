@@ -19,5 +19,5 @@ module.exports = function (controller) {
       console.log("[slash-bus] Message sent!", new Date().getTime());
     }
 
-    controller.on('slash_command', asyncreply(bot, message));
+    controller.on('slash_command', (bot,message) => asyncreply(bot, message));
 };
