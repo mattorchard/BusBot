@@ -38,5 +38,3 @@ module.exports = function (controller) {
 
     controller.on('slash_command', (bot,message) => asyncreply(bot, message));
 };
-
-
