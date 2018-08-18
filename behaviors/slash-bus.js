@@ -9,8 +9,8 @@ module.exports = function (controller) {
         case "/nextbus":
         case "/stopinfo":
           try{
-          console.log("[slash-bus] Replying when asynchronous data is returned.");
-          octData = await oct.nextBus(7659);
+          console.log("[slash-bus] Replying when asynchronous data is returned.\nInput:\n"+JSON.stringify(message,null,2)+"\n");
+          octData = await oct.nextBus(3010);
           bot.replyPrivate(bot,octData);
           } catch(error){
             console.error(error);
