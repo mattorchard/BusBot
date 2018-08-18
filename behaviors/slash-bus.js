@@ -8,8 +8,9 @@ module.exports = function (controller) {
       switch(message.command) {
         case "/nextbus":
         case "/stopinfo":
+          console.log("Message recieved, '"+message+"', replying.");
           bot.replyPrivate(message, "Grabbing bus info for stop 7659...");
-          bot.replyPrivateDelayed(oct.nextBus(7659).catch("Err"), "....?");
+          asyncreply(bot,message);
           break;
         default:
           bot.replyPrivate(message, `What does: \`${message.text}\` mean?`);
@@ -20,3 +21,8 @@ module.exports = function (controller) {
     });
 
 };
+
+async function asyncreply(bot,message){
+          bot.replyPrivate(message, "Replying when asynchronous data is returned.");
+          bot.replyPrivateDelayed(await oct.nextBus(7659), "....?");
+}

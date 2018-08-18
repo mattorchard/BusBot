@@ -63,7 +63,7 @@ async function stopInfo (stop) {
   }
 
   jsonOut = { "text" : output.join("\n") };
-  console.log("\nSlack Message:\n\n"+JSON.stringify(jsonOut,null,2)+"\n");
+  console.log("\nReplying with Slack Message:\n\n"+JSON.stringify(jsonOut,null,2)+"\n");
   return jsonOut;  
 }
 
