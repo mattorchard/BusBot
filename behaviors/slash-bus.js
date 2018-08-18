@@ -24,5 +24,6 @@ module.exports = function (controller) {
 
 async function asyncreply(bot,message){
           bot.replyPrivate(message, "Replying when asynchronous data is returned.");
-          bot.replyPrivateDelayed(await oct.nextBus(7659), "....?");
+          octData = await oct.nextBus(7659);
+          bot.replyPrivate(bot,octData);
 }
