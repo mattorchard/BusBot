@@ -1,6 +1,7 @@
 const BotKit = require("botkit");
 const BotkitStorage = require('botkit-storage-mongo');
 const SlashBus = require("./behaviors/slash-bus");
+const StaticMaps = require("./endpoints/static-maps");
 
 function startupError(error) {
   console.error(error);
@@ -30,7 +31,7 @@ if (missingEnvVariables.length > 0) {
 }
 
 const botkitConfig = {
-  storage: BotkitStorage({mongoUri: process.env.MONGOLAB_URI}),
+  storage: BotkitStorage({mongoUri: process.env.MONGOLAB_URI, tables: ['maps']}),
 };
 console.log(botkitConfig.storage);
 const controller = BotKit.slackbot(botkitConfig).configureSlackApp({
@@ -44,6 +45,7 @@ controller.setupWebserver(process.env.PORT, setupError => {
   if (setupError) {
     startupError(setupError);
   }
+  StaticMaps(controller.webserver, botkitConfig.storage);
   controller.createWebhookEndpoints(controller.webserver);
   controller.createOauthEndpoints(controller.webserver, (oauthError, req, res) => {
     if (oauthError) {
