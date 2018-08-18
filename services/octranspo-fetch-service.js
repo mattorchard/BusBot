@@ -49,8 +49,7 @@ async function stopInfo (stop) {
       });
 
   console.log(busData);
-  output.push("Information for stop "+busData.StopNo+" at "+busData.StopDescription+":");
-  output.push("Connections:");
+  output.push("Connections at stop "+busData.StopNo+" at "+busData.StopDescription+":");
   for(busNum in busData.Routes.Route){
     const Route = busData.Routes.Route[busNum];
     const TripArray=[]; 

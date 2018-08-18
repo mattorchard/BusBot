@@ -8,9 +8,13 @@ module.exports = function (controller) {
       switch(message.command) {
         case "/nextbus":
         case "/stopinfo":
+          try{
           console.log("[slash-bus] Replying when asynchronous data is returned.");
           octData = await oct.nextBus(7659);
           bot.replyPrivate(bot,octData);
+          } catch(error){
+            console.error(error);
+          }
           break;
         default:
           bot.replyPrivate(message, `What does: \`${message.text}\` mean?`);
