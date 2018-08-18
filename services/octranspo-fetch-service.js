@@ -81,7 +81,8 @@ async function stopInfo (stop, route=null, direction=null) {
   return jsonOut;  
 }
 
-console.log(nextBus(3010,16).text);
+// Tests:
+//console.log(nextBus(3010,16).text);
 //console.log(stopInfo(3010).text);
 
 module.exports = { nextBus, stopInfo };
