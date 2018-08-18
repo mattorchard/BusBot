@@ -63,13 +63,13 @@ async function stopInfo (stop) {
   }
 
   jsonOut = { "text" : output.join("\n") };
-  console.log(jsonOut);
+  console.log("\nSlack Message:\n\n"+JSON.stringify(jsonOut,null,2)+"\n");
   return jsonOut;  
 }
 
 
 //Tests
-console.log(nextBus(7659).catch());
+//console.log(nextBus(7659).catch());
 
 
 module.exports = { nextBus, stopInfo };

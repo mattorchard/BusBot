@@ -1,5 +1,3 @@
-//Originally implemented by M.Orch-, https://github.com/morch028
-
 const fetch = require('node-fetch');
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').load();
