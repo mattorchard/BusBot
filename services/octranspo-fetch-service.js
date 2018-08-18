@@ -20,6 +20,7 @@ async function fetchData (stop,route,direction) {
 
   const response =  await fetch(util.getUrl("GetNextTripsForStopAllRoutes",postData)); 
   const busData = await response.json(); 
+  console.log("[oct-fetch]\nRaw OC-Transpo Data:\n\n"+JSON.stringify(busData.GetRouteSummaryForStopResult,null,2)+"\n");
   return busData.GetRouteSummaryForStopResult;
 }
 
@@ -88,5 +89,7 @@ async function stopInfo (stop) {
   console.log("\nReplying with Slack Message:\n\n"+JSON.stringify(jsonOut,null,2)+"\n");
   return jsonOut;  
 }
+
+console.log(stopInfo(1600).text);
 
 module.exports = { nextBus, stopInfo };

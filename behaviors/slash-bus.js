@@ -14,7 +14,7 @@ module.exports = function (controller) {
         case "/nextbus":
         case "/stopinfo":
           try{
-          console.log("[slash-bus] Replying when asynchronous data is returned.");
+          console.log("[slash-bus] Replying when asynchronous data is returned for stop "+SlackText[0]+".");
           octData = await oct.nextBus(SlackText[0]);
           bot.replyPrivate(bot,octData);
           } catch(error){
