@@ -19,7 +19,6 @@
   "devDependencies": {},
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "devStart": "lt index"
+    "start": "node index.js"
   }
 }
