@@ -8,7 +8,7 @@ module.exports = function (controller) {
       switch(message.command) {
         case "/nextbus":
         case "/stopinfo":
-          console.log("Message recieved, '"+message+"', replying.");
+          console.log("[slash-bus] Message recieved, '"+message+"', replying.");
           bot.replyPrivate(message, "Grabbing bus info for stop 7659...");
           asyncreply(bot,message);
           break;
@@ -16,14 +16,15 @@ module.exports = function (controller) {
           bot.replyPrivate(message, `What does: \`${message.text}\` mean?`);
           break;
       }
-      console.log("Message sent!", new Date().getTime());
+      console.log("[slash-bus] Message sent!", new Date().getTime());
 
     });
 
 };
 
 async function asyncreply(bot,message){
-          bot.replyPrivate(message, "Replying when asynchronous data is returned.");
+          console.log("[slash-bus] Replying when asynchronous data is returned.");
           octData = await oct.nextBus(7659);
           bot.replyPrivate(bot,octData);
+          console.log("[slash-bus] Sent async message.");
 }
