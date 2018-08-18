@@ -12,10 +12,18 @@ module.exports = function (controller) {
 
       switch(message.command) {
         case "/nextbus":
+          try{
+          console.log("[slash-bus] Replying when asynchronous data is returned for stop "+SlackText[0]+".");
+          octData = await oct.nextBus(SlackText[0],SlackText[1]);
+          bot.replyPrivate(bot,octData);
+          } catch(error){
+            console.error(error);
+          }
+          break;
         case "/stopinfo":
           try{
           console.log("[slash-bus] Replying when asynchronous data is returned for stop "+SlackText[0]+".");
-          octData = await oct.nextBus(SlackText[0]);
+          octData = await oct.stopInfo(SlackText[0]);
           bot.replyPrivate(bot,octData);
           } catch(error){
             console.error(error);
