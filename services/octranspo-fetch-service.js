@@ -24,7 +24,7 @@ async function fetchData (stop,route,direction) {
 }
 
 
-async function nextBus (stop, route=0, direction=0) {
+async function nextBus (stop, route=null, direction=null) {
 
 
   return stopInfo(stop);//Temporary: Direct all input to stopInfo.
@@ -88,10 +88,5 @@ async function stopInfo (stop) {
   console.log("\nReplying with Slack Message:\n\n"+JSON.stringify(jsonOut,null,2)+"\n");
   return jsonOut;  
 }
-
-
-//Tests
-//console.log(nextBus(3010).catch());
-
 
 module.exports = { nextBus, stopInfo };
