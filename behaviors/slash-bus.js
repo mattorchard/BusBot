@@ -2,7 +2,7 @@ const octranspoService = require('./../services/octranspo-fetch-service.js');
 const slackFormatService = require('./../services/slack-format-service');
 
 // Regex for pulling arguments: stopNo, busNo, and directionId
-const STOP_INFO_MESSAGE_PATTERN = /^(\d\d\d\d)( ?\d{1,3})?( ?\d)?$/;
+const STOP_INFO_MESSAGE_PATTERN = /^(\d\d\d\d) ?(\d{1,3})? ?(\d)?$/;
 
 async function getStopInfoReply(messageText) {
   const [/*Unused*/, stopId, routeId, directionId] = STOP_INFO_MESSAGE_PATTERN.exec(messageText);
