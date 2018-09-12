@@ -26,7 +26,7 @@ module.exports = function (controller) {
 
       switch(message.command.toLowerCase()) {
         case "/stopinfo":
-          bot.replyPrivate("Fetching data for stop...");
+          bot.replyPrivate(message, "Fetching data for stop...");
           try {
             bot.replyPrivateDelayed(message, await getStopInfoReply(message.text));
           } catch (error) {
