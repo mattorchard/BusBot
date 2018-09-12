@@ -27,10 +27,10 @@ module.exports = function (controller) {
       switch(message.command.toLowerCase()) {
         case "/stopinfo":
           try {
-            bot.replyPrivate(message, await getStopInfoReply(message.text));
+            bot.replyPrivateDelayed(message, await getStopInfoReply(message.text));
           } catch (error) {
             console.error("Failed to respond:", error);
-            bot.replyPrivate(message, "Uh oh, something went wrong :face_palm:");
+            bot.replyPrivateDelayed(message, "Uh oh, something went wrong :face_palm:");
           }
           break;
         default:
