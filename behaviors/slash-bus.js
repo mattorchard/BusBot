@@ -1,5 +1,5 @@
-const octService = require('./../services/octranspo-fetch-service.js');
-
+const octranspoService = require('./../services/octranspo-fetch-service.js');
+const slackFormatService = require('./../services/slack-format-service');
 
 // Regex for pulling arguments: stopNo, busNo, and directionId
 const STOP_INFO_MESSAGE_PATTERN = /^(\d\d\d\d)( ?\d{1,3})?( ?\d)?$/;
@@ -12,7 +12,8 @@ async function stopInfoReply(bot, message) {
     return;
   }
   try {
-    const reply = await octService.stopInfo(arguments[1], arguments[2], arguments[3]);
+    const stopInfo = await octranspoService.stopInfo(arguments[1], arguments[2], arguments[3]);
+    const reply = slackFormatService.formatStopInfo(stopInfo);
     bot.replyPrivate(bot, reply);
   } catch(error){
     console.error(error);
@@ -26,7 +27,7 @@ module.exports = function (controller) {
     async function replyAsync(bot,message) {
       console.log("Message received", new Date().getTime(), message.command, message.text);
 
-      switch(message.command) {
+      switch(message.command.toLowerCase()) {
         case "/stopinfo":
           return stopInfoReply(bot, message);
         default:
