@@ -5,7 +5,6 @@ const octranspoConstants = require("./octranspo-constants.json");
 async function fetchStopInfo(stopNo) {
   const queryParams = {stopNo};
   const response = await fetch(util.getUrl("stopInfo", queryParams));
-
   if (!response.ok) {
     throw new Error(`Error contacting OCTranspo API status: [${response.status}]`);
   }
@@ -86,7 +85,7 @@ async function stopInfo(stopId, routeId, directionId) {
   let routes = parseOctranspoArray(busData, "Route").map(formatRoutesForStopInfo);
 
   if (routeId && directionId) {
-    routes = routes.filter(route => route.routeId === route && route.directionId === directionId)
+    routes = routes.filter(route => route.routeId === routeId && route.directionId === directionId)
   } else if (routeId) {
     routes = routes.filter(route => route.routeId === routeId);
   }
