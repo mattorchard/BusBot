@@ -2,6 +2,8 @@ const fetch = require('node-fetch');
 const util = require('./octranspo-link-service.js');
 const octranspoConstants = require("./octranspo-constants.json");
 
+/* Generic OCTranspo Functions */
+
 async function fetchStopInfo(stopNo) {
   const queryParams = {stopNo};
   const response = await fetch(util.getUrl("stopInfo", queryParams));
@@ -32,22 +34,7 @@ async function fetchStopInfo(stopNo) {
   return stopData;
 }
 
-function formatTripsForStopInfo(trip) {
-  return {
-    destination: trip.TripDestination,
-    time: trip.AdjustedScheduleTime
-  };
-}
-
-function formatRoutesForStopInfo(route) {
-  return {
-    routeId: route.RouteNo,
-    heading: route.RouteHeading,
-    directionId: route.DirectionID,
-    trips: parseOctranspoArray(route, "Trip").map(formatTripsForStopInfo)
-  };
-}
-
+// Todo: Refactor once Node adds support for flatMap
 function parseOctranspoArray(parent, name) {
   const namePlural = `${name}s`;
   if (parent[namePlural]) {
@@ -74,6 +61,24 @@ function parseOctranspoArray(parent, name) {
   } else {
     return [];
   }
+}
+
+/* Stop Info Functions */
+
+function formatTripsForStopInfo(trip) {
+  return {
+    destination: trip.TripDestination,
+    time: trip.AdjustedScheduleTime
+  };
+}
+
+function formatRoutesForStopInfo(route) {
+  return {
+    routeId: route.RouteNo,
+    heading: route.RouteHeading,
+    directionId: route.DirectionID,
+    trips: parseOctranspoArray(route, "Trip").map(formatTripsForStopInfo)
+  };
 }
 
 async function stopInfo(stopId, routeId, directionId) {
