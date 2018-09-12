@@ -5,20 +5,27 @@ const mockOctranspo = require('./mock-octranspo-api');
 
 beforeEach(mockOctranspo);
 
+test('Gimme dat style', async () => {
+  const stopInfo = await octranspoService.getStopInfo(3022);
+  const reply = slackFormatService.formatStopInfo(stopInfo);
+  console.log(JSON.stringify(reply));
+  expect("").toBeNull();
+});
+
 test('Should contain stop name', async() => {
-  const stopInfo = await octranspoService.stopInfo(3022);
+  const stopInfo = await octranspoService.getStopInfo(3022);
   const reply = slackFormatService.formatStopInfo(stopInfo);
   expect(reply).toContain("*LEES");
 });
 
 test('Should contain route name', async() => {
-  const stopInfo = await octranspoService.stopInfo(3022);
+  const stopInfo = await octranspoService.getStopInfo(3022);
   const reply = slackFormatService.formatStopInfo(stopInfo);
   expect(reply).toContain("*101 Moodie");
 });
 
 test('Should contain route name of filtered route', async() => {
-  const stopInfo = await octranspoService.stopInfo(3022, 101);
+  const stopInfo = await octranspoService.getStopInfo(3022, 101);
   const reply = slackFormatService.formatStopInfo(stopInfo);
   expect(reply).toContain("*101 Moodie");
 });

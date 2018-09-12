@@ -36,7 +36,7 @@ function formatRoute(route) {
 function getColorForTrips(trips) {
   const minimum = trips
     .map(trip => parseInt(trip.time))
-    .reduce((min, current) => current < min ? current : min, Infinity);
+    .reduce((min, current) => Math.min(min, current), Infinity);
   if (minimum < 5) {
     return "good"
   } else if (minimum < 15) {
@@ -46,34 +46,48 @@ function getColorForTrips(trips) {
   }
 }
 
-const formatRouteAsAttachment = timestamp => route =>{
-  const titleText = bold(`${route.routeId} ${route.heading}`);
+function formatTrips(trips) {
+  const destinations = trips.reduce((accumulator, trip) => {
+    if (accumulator[trip.destination]) {
+      accumulator[trip.destination] = `${accumulator[trip.destination]}, ${trip.time}`;
+    } else {
+      accumulator[trip.destination] = trip.time.toString();
+    }
+    return accumulator;
+  }, {});
+  const destinationEntries = Object.entries(destinations);
+  const includeDestination = (destinationEntries.length > 1);
+  return destinationEntries.map(entry => { return {
+      title: includeDestination ? removeFrench(entry[0]) : null,
+      value: `${entry[1]} minutes`,
+      short: true
+  }});
+}
+
+function formatRouteAsAttachment (route) {
+  const titleText = `${route.routeId} ${route.heading}`;
   if (route.trips.length === 0) {
     return {
       title: titleText,
       text: "No upcoming arrivals",
       color: COLORS.noArrivals,
-      ts: timestamp
     }
   }
 
   return {
     title: titleText,
-    text: "Unset",
-    color: getColorForTrips(route),
-    ts: timestamp
+    fields: formatTrips(route.trips),
+    color: getColorForTrips(route.trips),
   }
-};
+}
 
 module.exports = {
   formatStopInfo: (stopInfo) => {
-    const formattedStopName = bold(italics(stopInfo.stopName));
     if (stopInfo.routes.length === 0) {
-      return `No upcoming arrivals for stop ${formattedStopName}`;
+      return `No upcoming arrivals for stop ${bold(italics(stopInfo.stopName))}`;
     }
-    const timestamp = new Date().getTime().toString();
-    const attachments = stopInfo.routes.map(formatRouteAsAttachment(timestamp));
-    attachments[0].pretext = formattedStopName;
+    const attachments = stopInfo.routes.map(formatRouteAsAttachment);
+    attachments[0].pretext = `Upcoming arrivals for ${stopInfo.stopName}`;
     return {attachments}
   }
 };
