@@ -4,21 +4,17 @@ const slackFormatService = require('./../services/slack-format-service');
 // Regex for pulling arguments: stopNo, busNo, and directionId
 const STOP_INFO_MESSAGE_PATTERN = /^(\d\d\d\d)( ?\d{1,3})?( ?\d)?$/;
 
-async function stopInfoReply(bot, message) {
-  const [/*Unused*/, stopId, routeId, directionId] = STOP_INFO_MESSAGE_PATTERN.exec(message.text);
+async function getStopInfoReply(messageText) {
+  const [/*Unused*/, stopId, routeId, directionId] = STOP_INFO_MESSAGE_PATTERN.exec(messageText);
   if (!stopId) {
-    bot.replyPrivate(bot, "Looks like your message may not be formatted correctly");
-    bot.replyPrivate(bot, "The correct format is: `/stopinfo <your four digit stop code> [your bus number] [the bus direction number]`");
-    return;
+    return "Looks like your message may not be formatted correctly" +
+      "The correct format is: `/stopinfo <your four digit stop code> [your bus number] [the bus direction number]`";
   }
-  try {
-    console.log(`Fetching stop data for: stop[${stopId}], route[${routeId}], direction[${directionId}]`);
-    const stopInfo = await octranspoService.stopInfo(stopId, routeId, directionId);
-    const reply = slackFormatService.formatStopInfo(stopInfo);
-    bot.replyPrivate(bot, reply);
-  } catch(error){
-    console.error(error);
-  }
+  console.log(`Fetching stop data for: stop[${stopId}], route[${routeId}], direction[${directionId}]`);
+  const stopInfo = await octranspoService.stopInfo(stopId, routeId, directionId);
+  const reply = slackFormatService.formatStopInfo(stopInfo);
+  console.log("Reply:", reply);
+  return reply;
 }
 
 
@@ -30,7 +26,13 @@ module.exports = function (controller) {
 
       switch(message.command.toLowerCase()) {
         case "/stopinfo":
-          return stopInfoReply(bot, message);
+          try {
+            bot.replyPrivate(message, await getStopInfoReply(message.text));
+          } catch (error) {
+            console.error("Failed to respond:", error);
+            bot.replyPrivate(message, "Uh oh, something went wrong :face_palm:");
+          }
+          break;
         default:
           bot.replyPrivate(message, `What does: \`${message.text}\` mean?`);
           break;
