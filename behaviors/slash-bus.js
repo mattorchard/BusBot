@@ -5,7 +5,7 @@ const slackFormatService = require('./../services/slack-format-service');
 const STOP_INFO_MESSAGE_PATTERN = /^(\d\d\d\d) ?(\d{1,3})? ?(\d)?$/;
 
 async function getStopInfoReply(messageText) {
-  const [/*Unused*/, stopId, routeId, directionId] = STOP_INFO_MESSAGE_PATTERN.exec(messageText);
+  const [/*Unused*/, stopId, routeId, directionId] = STOP_INFO_MESSAGE_PATTERN.exec(messageText).map(num => parseInt(num));
   if (!stopId) {
     return "Looks like your message may not be formatted correctly" +
       "The correct format is: `/stopinfo <your four digit stop code> [your bus number] [the bus direction number]`";
