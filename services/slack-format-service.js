@@ -1,3 +1,7 @@
+const COLORS = {
+  noArrivals: "#202020"
+};
+
 
 function bold(text) {
   return `*${text}*`
@@ -29,8 +33,47 @@ function formatRoute(route) {
   }
 }
 
+function getColorForTrips(trips) {
+  const minimum = trips
+    .map(trip => parseInt(trip.time))
+    .reduce((min, current) => current < min ? current : min, Infinity);
+  if (minimum < 5) {
+    return "good"
+  } else if (minimum < 15) {
+    return "warning"
+  } else {
+    return "danger"
+  }
+}
+
+const formatRouteAsAttachment = timestamp => route =>{
+  const titleText = bold(`${route.routeId} ${route.heading}`);
+  if (route.trips.length === 0) {
+    return {
+      title: titleText,
+      text: "No upcoming arrivals",
+      color: COLORS.noArrivals,
+      ts: timestamp
+    }
+  }
+
+  return {
+    title: titleText,
+    text: "Unset",
+    color: getColorForTrips(route),
+    ts: timestamp
+  }
+};
+
 module.exports = {
   formatStopInfo: (stopInfo) => {
-    return italics(bold(stopInfo.stopName)) + "\n" + stopInfo.routes.map(formatRoute).join("\n");
+    const formattedStopName = bold(italics(stopInfo.stopName));
+    if (stopInfo.routes.length === 0) {
+      return `No upcoming arrivals for stop ${formattedStopName}`;
+    }
+    const timestamp = new Date().getTime().toString();
+    const attachments = stopInfo.routes.map(formatRouteAsAttachment(timestamp));
+    attachments[0].pretext = formattedStopName;
+    return {attachments}
   }
 };
