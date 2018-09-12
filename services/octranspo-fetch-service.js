@@ -1,88 +1,101 @@
 const fetch = require('node-fetch');
 const util = require('./octranspo-link-service.js');
+const octranspoConstants = require("./octranspo-constants.json");
 
-async function fetchData (stop,route,direction) {
+async function fetchStopInfo(stopNo) {
+  const queryParams = {stopNo};
+  const response = await fetch(util.getUrl("stopInfo", queryParams));
 
-  const postData={};
-  if(stop){postData.stopNo = stop;}
-  if(route){postData.routeNo = route;}
-  if(direction){postData.direction = direction;}
-  
-  const response =  await fetch(util.getUrl("GetNextTripsForStopAllRoutes",postData)); 
-  const busData = await response.json(); 
-  return busData.GetRouteSummaryForStopResult;
-}
+  if (!response.ok) {
+    throw new Error(`Error contacting OCTranspo API status: [${response.status}]`);
+  }
+  let data;
+  try {
+    data = await response.json();
+  } catch (e) {
+    console.error("Malformed JSON from OCTranspo (typically credentials issue)");
+    throw new Error("OCTranspo returned malformed json");
+  }
 
-async function nextBus (stop, route=null, direction=null) {
+  const stopData = data && data.GetRouteSummaryForStopResult;
 
-  return stopInfo(stop, route, direction);//Temporary: Direct all input to stopInfo.
-  /*  
-  console.log("[oct-fetch] nextBus("+stop+" "+route+" "+direction+")");
-
-  if(!route){
-    console.log("[oct-fetch] no route data provided, returning stopinfo."); 
-    return stopInfo(stop);
-  }*/
-}
-
-async function stopInfo (stop, route=null, direction=null) {
-  
-  const output = [];
-  let route_present=false;
-  
-  const busData = await fetchData(stop).catch(function(err) {
-      console.log('Error: '+err);
-      });
-
-  output.push("Connections at stop *"+busData.StopNo+"*, "+busData.StopDescription+":");
-  
-  if( Array.isArray(busData.Routes.Route)){ 
-    for(busNum in busData.Routes.Route){
-      const Route = busData.Routes.Route[busNum];
-      const TripArray=[]; 
-      for(tripNum in Route.Trips){
-        const Trip = Route.Trips[tripNum];
-        TripArray.push(Trip.TripStartTime);
-      }
-      if(Route.RouteNo==route){route_present=true;}
-      if(route==null || Route.RouteNo==route){ 
-        output.push("*"+Route.RouteNo+"* "+Route.Direction+" to "+Route.RouteHeading+" at "+
-        TripArray.join(", ")+".");
-      }
+  if (!stopData) {
+    throw new Error("No data returned for stop");
+  } else if (stopData.Error) {
+    const octranspoErrorMessage = octranspoConstants.errors[stopData.Error];
+    if (octranspoErrorMessage) {
+      throw new Error(octranspoErrorMessage)
+    } else {
+      throw new Error(`Unknown OCTranspo error message [${stopData.Error}]\n${JSON.stringify(stopData, null, 2)}`);
     }
+  }
+
+  return stopData;
+}
+
+function formatTripsForStopInfo(trip) {
+  return {
+    destination: trip.TripDestination,
+    time: trip.AdjustedScheduleTime
+  };
+}
+
+function formatRoutesForStopInfo(route) {
+  return {
+    routeId: route.RouteNo,
+    heading: route.RouteHeading,
+    directionId: route.DirectionID,
+    trips: parseOctranspoArray(route, "Trip").map(formatTripsForStopInfo)
+  };
+}
+
+function parseOctranspoArray(parent, name) {
+  const namePlural = `${name}s`;
+  if (parent[namePlural]) {
+    const children = parent[namePlural];
+    if (Array.isArray(children)) {
+      return children;
+    } else {
+      if (children[name]) {
+        const subChildren = children[name];
+        if (Array.isArray(subChildren)) {
+          return subChildren
+        } else {
+          return [subChildren]
+        }
+      }
+      return [children];
+    }
+  } else if (parent[name]) {
+    const child = parent[name];
+    if (child[name]) {
+      return [child[name]]
+    }
+    return [child];
   } else {
-    const TripArray=[]; 
-    const Route = busData.Routes.Route; 
-    for(tripNum in Route.Trips.Trip){
-      const Trip = Route.Trips.Trip[tripNum];
-      TripArray.push(Trip.TripStartTime);
-    }
-    if(Route.RouteNo==route){route_present=true;}
-    if(route==null || Route.RouteNo==route){ 
-      output.push("*"+Route.RouteNo+"* "+Route.Direction+" to "+Route.RouteHeading+" at "+
-      TripArray.join(", ")+".");
-    }
+    return [];
   }
- 
-  if(output.length==1){
-    switch(route){
-      case null:
-        output.push("No connecting routes found.");
-        break;
-      default:
-        output.push("Route "+route+" does not pass stop "+stop+" at this time.");
-        //Separate output-building into another method so all routes can be repeated here.
-        break; 
-    }
-  }
-  
-  jsonOut = { "text" : output.join("\n") };
-  console.log("\nReplying with Slack Message:\n\n"+JSON.stringify(jsonOut,null,2)+"\n");
-  return jsonOut;  
 }
 
-// Tests:
-//console.log(nextBus(3010,16).text);
-//console.log(stopInfo(3010).text);
+async function stopInfo(stop, route, direction) {
+  if (direction && !route) {
+    throw new Error("Must specify route to filter by direction");
+  }
 
-module.exports = { nextBus, stopInfo };
+  const busData = await fetchStopInfo(stop);
+  let routes = parseOctranspoArray(busData, "Route").map(formatRoutesForStopInfo);
+
+  if (route && direction) {
+    routes = routes.filter(route => route.routeId === route && route.directionId === direction)
+  } else if (route) {
+    routes = routes.filter(route => route.routeId === route);
+  }
+
+  return {
+    stopName: busData.StopDescription,
+    routes: routes
+  };
+}
+
+
+module.exports = { stopInfo };
