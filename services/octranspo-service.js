@@ -1,12 +1,30 @@
 const fetch = require('node-fetch');
-const util = require('./octranspo-link-service.js');
 const octranspoConstants = require("./octranspo-constants.json");
+
+const BASE_QUERY_PARAMS = {
+  format: "json",
+  appID: process.env.OCTRANSPO_APP_ID,
+  apiKey: process.env.OCTRANSPO_API_KEY
+};
 
 /* Generic OCTranspo Functions */
 
+function getUrl(endpoint, queryParams) {
+  const fullEndpoint = octranspoConstants.endpoints[endpoint];
+  if (!fullEndpoint) {throw new Error(`Invalid endpoint [${endpoint}]`);}
+
+  const queryEntries = Object.entries(Object.assign(BASE_QUERY_PARAMS, queryParams));
+  const populatedQueryEntries = queryEntries.filter(entry => entry[0] && entry[1]);
+
+  const queryList = populatedQueryEntries.map(entry => `${entry[0]}=${entry[1]}`);
+  const queryString = queryList.join("&");
+
+  return `${octranspoConstants.baseUrl}/${fullEndpoint}?${queryString}`;
+}
+
 async function fetchStopInfo(stopNo) {
   const queryParams = {stopNo};
-  const response = await fetch(util.getUrl("stopInfo", queryParams));
+  const response = await fetch(getUrl("getStopInfo", queryParams));
   if (!response.ok) {
     throw new Error(`Error contacting OCTranspo API status: [${response.status}]`);
   }
@@ -81,7 +99,7 @@ function formatRoutesForStopInfo(route) {
   };
 }
 
-async function stopInfo(stopId, routeId, directionId) {
+async function getStopInfo(stopId, routeId, directionId) {
   if (directionId && !routeId) {
     throw new Error("Must specify route to filter by direction");
   }
@@ -102,4 +120,4 @@ async function stopInfo(stopId, routeId, directionId) {
 }
 
 
-module.exports = { stopInfo };
+module.exports = { getUrl, getStopInfo };

@@ -1,4 +1,4 @@
-const octranspoService = require('./../services/octranspo-fetch-service.js');
+const octranspoService = require('../services/octranspo-service.js');
 const slackFormatService = require('./../services/slack-format-service');
 
 // Regex for pulling arguments: stopNo, busNo, and directionId
@@ -11,7 +11,7 @@ async function getStopInfoReply(messageText) {
       "The correct format is: `/stopinfo <your four digit stop code> [your bus number] [the bus direction number]`";
   }
   console.log(`Fetching stop data for: stop[${stopId}], route[${routeId}], direction[${directionId}]`);
-  const stopInfo = await octranspoService.stopInfo(stopId, routeId, directionId);
+  const stopInfo = await octranspoService.getStopInfo(stopId, routeId, directionId);
   const reply = slackFormatService.formatStopInfo(stopInfo);
   console.log("Reply:", reply);
   return reply;

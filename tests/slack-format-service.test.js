@@ -1,4 +1,4 @@
-const octranspoService = require('../services/octranspo-fetch-service');
+const octranspoService = require('../services/octranspo-service');
 const slackFormatService = require('../services/slack-format-service');
 const mockOctranspo = require('./mock-octranspo-api');
 
