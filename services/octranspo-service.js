@@ -24,7 +24,7 @@ function getUrl(endpoint, queryParams) {
 
 async function fetchStopInfo(stopNo) {
   const queryParams = {stopNo};
-  const response = await fetch(getUrl("getStopInfo", queryParams));
+  const response = await fetch(getUrl("stopInfo", queryParams));
   if (!response.ok) {
     throw new Error(`Error contacting OCTranspo API status: [${response.status}]`);
   }
