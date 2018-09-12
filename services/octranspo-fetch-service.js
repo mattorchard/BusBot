@@ -77,18 +77,18 @@ function parseOctranspoArray(parent, name) {
   }
 }
 
-async function stopInfo(stop, route, direction) {
-  if (direction && !route) {
+async function stopInfo(stopId, routeId, directionId) {
+  if (directionId && !routeId) {
     throw new Error("Must specify route to filter by direction");
   }
 
-  const busData = await fetchStopInfo(stop);
+  const busData = await fetchStopInfo(stopId);
   let routes = parseOctranspoArray(busData, "Route").map(formatRoutesForStopInfo);
 
-  if (route && direction) {
-    routes = routes.filter(route => route.routeId === route && route.directionId === direction)
-  } else if (route) {
-    routes = routes.filter(route => route.routeId === route);
+  if (routeId && directionId) {
+    routes = routes.filter(route => route.routeId === route && route.directionId === directionId)
+  } else if (routeId) {
+    routes = routes.filter(route => route.routeId === routeId);
   }
 
   return {
