@@ -1,0 +1,13 @@
+{
+  "baseUrl": "https://api.octranspo1.com/v1.2",
+  "endpoints": {
+    "stopInfo": "GetNextTripsForStopAllRoutes"
+  },
+  "errors": {
+    "1": {"internal": true, "message": "Invalid API key"},
+    "2": {"internal": true, "message": "Unable to query data source"},
+    "10": {"internal": false, "message": "Invalid stop number"},
+    "11": {"internal": false, "message": "Invalid route number"},
+    "12": {"internal": false, "message": "Stop does not service route"}
+  }
+}
