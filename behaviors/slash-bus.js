@@ -5,14 +5,15 @@ const slackFormatService = require('./../services/slack-format-service');
 const STOP_INFO_MESSAGE_PATTERN = /^(\d\d\d\d)( ?\d{1,3})?( ?\d)?$/;
 
 async function stopInfoReply(bot, message) {
-  const arguments = STOP_INFO_MESSAGE_PATTERN.exec(message.text);
-  if (!arguments || arguments.length < 2) {
+  const [/*Unused*/, stopId, routeId, directionId] = STOP_INFO_MESSAGE_PATTERN.exec(message.text);
+  if (!stopId) {
     bot.replyPrivate(bot, "Looks like your message may not be formatted correctly");
     bot.replyPrivate(bot, "The correct format is: `/stopinfo <your four digit stop code> [your bus number] [the bus direction number]`");
     return;
   }
   try {
-    const stopInfo = await octranspoService.stopInfo(arguments[1], arguments[2], arguments[3]);
+    console.log(`Fetching stop data for: stop[${stopId}], route[${routeId}], direction[${directionId}]`);
+    const stopInfo = await octranspoService.stopInfo(stopId, routeId, directionId);
     const reply = slackFormatService.formatStopInfo(stopInfo);
     bot.replyPrivate(bot, reply);
   } catch(error){
