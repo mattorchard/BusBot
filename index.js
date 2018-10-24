@@ -22,9 +22,12 @@ const requiredEnvVariables = [
   "REDIRECT_URI",
   // For MongoLab
   "MONGOLAB_URI",
-  //For OCTranspo
+  // For OCTranspo
   "OCTRANSPO_APP_ID",
-  "OCTRANSPO_API_KEY"
+  "OCTRANSPO_API_KEY",
+  // For Google Maps
+  "GMAPS_KEY",
+  "PUBLIC_URL"
 ];
 
 const missingEnvVariables = requiredEnvVariables.filter(variable => !process.env[variable]);
@@ -48,7 +51,6 @@ controller.setupWebserver(process.env.PORT, setupError => {
   if (setupError) {
     startupError(setupError);
   }
-  StaticMaps(controller.webserver, botkitConfig.storage);
   controller.createWebhookEndpoints(controller.webserver);
   controller.createOauthEndpoints(controller.webserver, (oauthError, req, res) => {
     if (oauthError) {
@@ -58,7 +60,10 @@ controller.setupWebserver(process.env.PORT, setupError => {
       res.send('Success!');
     }
   });
+  StaticMaps(controller.webserver, botkitConfig.storage);
+  SlashBus(controller, botkitConfig.storage);
+
 });
 
 
-SlashBus(controller);
+

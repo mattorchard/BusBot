@@ -86,7 +86,9 @@ function parseOctranspoArray(parent, name) {
 function formatTripsForStopInfo(trip) {
   return {
     destination: trip.TripDestination,
-    time: trip.AdjustedScheduleTime
+    time: trip.AdjustedScheduleTime,
+    latitude: trip.Latitude,
+    longitude: trip.Longitude
   };
 }
 
