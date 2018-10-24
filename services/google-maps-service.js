@@ -22,7 +22,7 @@ function getGoogleMapsUrl(trips) {
 
 function getTripsFromRoutes(routes) {
   const trips = [];
-  routes.forEach(route => route.trips.forEach(trip => trips.append(trip)));
+  routes.forEach(route => route.trips.forEach(trip => trips.push(trip)));
   return trips;
 }
 
