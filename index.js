@@ -2,6 +2,9 @@ const BotKit = require("botkit");
 const BotkitStorage = require('botkit-storage-mongo');
 const SlashBus = require("./behaviors/slash-bus");
 const StaticMaps = require("./endpoints/static-maps");
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').load();
+}
 
 function startupError(error) {
   console.error(error);
