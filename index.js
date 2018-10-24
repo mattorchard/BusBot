@@ -1,6 +1,9 @@
 const BotKit = require("botkit");
 const BotkitStorage = require('botkit-storage-mongo');
 const SlashBus = require("./behaviors/slash-bus");
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').load();
+}
 
 if (!process.env.CLIENT_ID
   || !process.env.CLIENT_SECRET
@@ -23,7 +26,7 @@ const controller = BotKit.slackbot(botkitConfig).configureSlackApp({
   scopes: process.env.OAUTH_SCOPES.split(",")
 });
 
-controller.setupWebserver(process.env.PORT, (error, webserver) => {
+controller.setupWebserver(process.env.PORT, error => {
   if (error) {
     console.error("Unexpected error occured while setting up webserver", error);
     return;

@@ -1,0 +1,8 @@
+# Environment Variables
+.env
+
+# NPM
+node_modules/
+
+# Vim
+*.swp
