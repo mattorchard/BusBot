@@ -9,7 +9,6 @@ beforeEach(mockOctranspo);
 test('Should contain stop name', async() => {
   const stopInfo = await octranspoService.getStopInfo(3022);
   const reply = slackFormatService.formatStopInfo(stopInfo);
-  console.log(JSON.stringify(reply));
   expect(reply.text).toContain("*LEES");
 });
 
@@ -18,4 +17,3 @@ test('Should contain route name', async() => {
   const reply = slackFormatService.formatStopInfo(stopInfo);
   expect(reply.attachments.some(attachment => attachment.title === "103 Moodie")).toBeTruthy();
 });
-
