@@ -4,7 +4,7 @@ const octranspoService = require('../services/octranspo-service.js');
 
 const URL_BASE = "https://maps.googleapis.com/maps/api/staticmap?" +
   `key=${process.env.GMAPS_KEY}` +
-  "&size=600x300" +
+  "&size=800x600" +
   "&maptype=roadmap";
 
 const COLORS = ["green", "red", "blue"];
@@ -16,13 +16,18 @@ function tripToMarker(trip, index) {
   return "&markers=" + [color, label, position].join(seperator);
 }
 
-function getGoogleMapsUrl(trips) {
-  return URL_BASE + trips.map(tripToMarker()).join("");
+function getGoogleMapsUrl(stopInfo) {
+  const trips = getTripsFromRoutes(stopInfo.routes);
+  return URL_BASE + trips.map(tripToMarker).join("");
 }
 
 function getTripsFromRoutes(routes) {
   const trips = [];
-  routes.forEach(route => route.trips.forEach(trip => trip && trips.push(trip)));
+  routes.forEach(route => route.trips.forEach(trip => {
+    if (trip) {
+      trips.push({label: route.routeId, ...trip})
+    }
+  }));
   return trips;
 }
 
@@ -32,10 +37,10 @@ function getPublicUrl(uid) {
 
 module.exports = function(storage){
   return {
+    tripToMarker, getGoogleMapsUrl, getTripsFromRoutes, getPublicUrl,
     getMapUrl: async function(stopId, routeId, directionId) {
       const stopInfo = await octranspoService.getStopInfo(stopId, routeId, directionId);
-      const trips = getTripsFromRoutes(stopInfo.routes);
-      const googleMapsUrl = getGoogleMapsUrl(trips);
+      const googleMapsUrl = getGoogleMapsUrl(stopInfo);
 
       const uid = await uidGenerator.generate();
       console.log("Map url generated:", googleMapsUrl, "Saving to:", uid);
