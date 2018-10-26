@@ -35,6 +35,7 @@ module.exports = function (controller, storage) {
     console.log(`Fetching map for: stop[${stopId}], route[${routeId}], direction[${directionId}]`);
     const reply = await googleMapsService.getMapUrl(stopId, routeId, directionId);
     console.log("Reply:", reply);
+    return reply;
   }
 
   console.log("Attaching /bus behaviors");
