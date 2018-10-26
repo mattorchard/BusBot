@@ -45,7 +45,6 @@ module.exports = function(storage){
       const uid = await uidGenerator.generate();
       console.log("Map url generated:", googleMapsUrl, "Saving to:", uid);
       storage.maps.save({id: uid, url: googleMapsUrl});
-      console.log("Public map url:", url);
       return getPublicUrl(uid)
     }
   }
