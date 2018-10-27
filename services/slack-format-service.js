@@ -83,5 +83,12 @@ module.exports = {
       text: `Upcoming arrivals for ${titleText}`,
       attachments: attachments
     }
+  },
+  formatBusMap: (publicUrl, legend) => {
+    return {
+      attachments: [{
+        image_url: publicUrl
+      }]
+    };
   }
 };

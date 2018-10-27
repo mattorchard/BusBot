@@ -33,7 +33,9 @@ module.exports = function (controller, storage) {
         "The correct format is: `/busmap <your four digit stop code> [your bus number] [the bus direction number]`";
     }
     console.log(`Fetching map for: stop[${stopId}], route[${routeId}], direction[${directionId}]`);
-    const reply = await googleMapsService.getMapUrl(stopId, routeId, directionId);
+    const publicUrl = await googleMapsService.getMapUrl(stopId, routeId, directionId);
+    console.log("Public url:", publicUrl);
+    const reply = slackFormatService.formatBusMap(publicUrl);
     console.log("Reply:", reply);
     return reply;
   }
