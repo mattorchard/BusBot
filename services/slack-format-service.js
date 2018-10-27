@@ -87,6 +87,7 @@ module.exports = {
   formatBusMap: (publicUrl, legend) => {
     return {
       attachments: [{
+        text: " ",
         image_url: publicUrl
       }]
     };
