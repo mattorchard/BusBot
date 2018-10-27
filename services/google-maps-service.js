@@ -7,9 +7,10 @@ const URL_BASE = "https://maps.googleapis.com/maps/api/staticmap?" +
   "&size=800x600" +
   "&maptype=roadmap";
 
-const COLORS = ["green", "red", "blue"];
+const COLORS = ["green", "yellow", "red"];
+const LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
 function tripToMarker(trip, index) {
-  const color = "color:" + COLORS[index & COLORS.length];
+  const color = "color:" + COLORS[index % COLORS.length];
   const label = "label:" + trip.label;
   const position = `${trip.latitude},${trip.longitude}`;
   const seperator = "%7c";
@@ -23,9 +24,19 @@ function getGoogleMapsUrl(stopInfo) {
 
 function getTripsFromRoutes(routes) {
   const trips = [];
+  const legend = {};
+  let labelIndex = 0;
+
   routes.forEach(route => route.trips.forEach(trip => {
     if (trip) {
-      trips.push({label: route.routeId, ...trip})
+      let tripName = `${route.routeId} ${route.heading} ${trip.destination}`;
+      let label = legend[tripName];
+      if (!label) {
+        label = LABELS[labelIndex];
+        labelIndex ++;
+        legend[tripName] = label;
+      }
+      trips.push({label, ...trip})
     }
   }));
   return trips;
