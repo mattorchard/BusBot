@@ -4,7 +4,7 @@ const octranspoService = require('../services/octranspo-service.js');
 
 const URL_BASE = "https://maps.googleapis.com/maps/api/staticmap?" +
   `key=${process.env.GMAPS_KEY}` +
-  "&size=800x600" +
+  "&size=500x360" +
   "&maptype=roadmap";
 
 const COLORS = ["green", "yellow", "red"];
